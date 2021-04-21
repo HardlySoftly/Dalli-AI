@@ -1,0 +1,39 @@
+So, with this AI mod I was trying to do things a little
+different to my last one (Dilli AI).
+
+The key trouble I remember having is that balancing many
+Builders properly to achieve any behaviour in particular is
+HARD.  You have to first manage priorities, then a
+veritible mess of different build conditions that must 
+cover every game condition under which you might want that
+builder.  Crazy!
+
+The approach I've gone with in this AI is to take
+complexity out of the disparate Builders, and centralise
+into a single decision making location.  This bit of code
+can then be organised and tuned to whatever behaviour
+without having to hunt around various files and tweak lots
+of conditions.
+
+The means by which I achieve it is to enforce centrally
+determined instance counts on builders via custom build
+conditions.  Inside the AIBrain class I spawn my own
+'DalliBrain' that fires off threads to:
+    1. Produce the features necessary to make decisions
+    2. Make the instance count decisions
+
+Individual builders can be turned off simply by lowering
+their allowed instances to less than 0, or prioritised by
+turning off higher priority (according to the Builder
+config) builders.
+
+Some places to check:
+    DalliBrain class - inside aibrain.lua
+        - The BaseProductionControllerFunction handles
+          engineer and economy related decisions.
+        - The LandProductionControllerFunction manages land
+          unit proportions.
+        - Several '<X>FeatureManagerThread's exist to
+          generate the stats used by the above controllers.
+    The build conditions - inside DalliBuildConditions.lua
+        - These are kept super simple
