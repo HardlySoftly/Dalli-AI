@@ -1,6 +1,6 @@
 name = "Dalli AI"
 uid = "52c31498-a2e9-11eb-bcbc-0242ac130002"
-version = 3
+version = 4
 copyright = "Softles"
 description = "When you first saw Dalli, were you blinded by its majesty?"
 author = "Softles"

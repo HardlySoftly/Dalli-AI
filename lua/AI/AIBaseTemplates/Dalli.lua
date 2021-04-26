@@ -6,14 +6,12 @@ BaseBuilderTemplate {
         -- Engineer Builders
         'DalliEngineerBuilders',
         -- Mex Upgrade Builders
-        --'DalliMexUpgradeBuilders',
+        'DalliMexUpgradeBuilders',
         -- Factory Builders
         'DalliFactoryEngineerBuilders',
-        'DalliFactoryT1LandSpamBuilders',
-        --'DalliFactoryT2LandSpamBuilders',
-        --'DalliFactoryT3LandSpamBuilders',
-        --'DalliFactoryT1AirSpamBuilders',
-        --'DalliLandFactoryUpgradeBuilders',
+        'DalliFactoryLandSpamBuilders',
+        'DalliFactoryAirSpamBuilders',
+        'DalliLandUpgradeBuilders',
         --'DalliAirFactoryUpgradeBuilders',
         -- Platoon Builders
         'DalliT1Platoons',
@@ -25,7 +23,7 @@ BaseBuilderTemplate {
 
     },
     ExpansionFunction = function(aiBrain, location, markerType)
-        -- Expanding is for casuals
+        -- Expanding is for casuals (and people who know how this works, which I don't...)
         return 0
     end,
 

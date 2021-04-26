@@ -9,7 +9,7 @@ BuilderGroup {
     -- The initial build order
     Builder {
         BuilderName = 'DalliCommanderBaseSetupBuilderBase',
-        PlatoonTemplate = 'CommanderBuilder',
+        PlatoonTemplate = 'CommanderBuilderDalli',
         Priority = 10000,
         BuilderConditions = {
                 { IBC, 'NotPreBuilt', {}},
@@ -19,6 +19,7 @@ BuilderGroup {
         PlatoonAddBehaviors = { 'CommanderBehaviorSorian' },
         PlatoonAddFunctions = { {SAI, 'BuildOnce'}, },
         BuilderData = {
+            aggroCDR = true,
             Construction = {
                 BuildStructures = {
                     -- Standard BO
@@ -67,7 +68,27 @@ BuilderGroup {
         Priority = 1500,
         InstanceCount = 1000,
         BuilderConditions = {
-            { DBC, 'EngineerPgenCoordinator', {}}
+            { DBC, 'EngineerPgenCoordinatorT1', {}}
+        },
+        BuilderType = 'Any',
+        BuilderData = {
+            NeedGuard = false,
+            DesiresAssist = true,
+            Construction = {
+                BuildClose = true,
+                BuildStructures = {
+                    'T1EnergyProduction',
+                }
+            }
+        }
+    },
+    Builder { -- T2 Pgen
+        BuilderName = 'DalliEngineerBuildersPgenT2',
+        PlatoonTemplate = 'DalliEngineerPgenT2Builder',
+        Priority = 1500,
+        InstanceCount = 1000,
+        BuilderConditions = {
+            { DBC, 'EngineerPgenCoordinatorT2', {}}
         },
         BuilderType = 'Any',
         BuilderData = {
@@ -76,7 +97,47 @@ BuilderGroup {
             Construction = {
                 BuildClose = false,
                 BuildStructures = {
-                    'T1EnergyProduction',
+                    'T2EnergyProduction',
+                }
+            }
+        }
+    },
+    Builder { -- T3 Pgen
+        BuilderName = 'DalliEngineerBuildersPgenT3',
+        PlatoonTemplate = 'DalliEngineerPgenT3Builder',
+        Priority = 1500,
+        InstanceCount = 1000,
+        BuilderConditions = {
+            { DBC, 'EngineerPgenCoordinatorT3', {}}
+        },
+        BuilderType = 'Any',
+        BuilderData = {
+            NeedGuard = false,
+            DesiresAssist = true,
+            Construction = {
+                BuildClose = false,
+                BuildStructures = {
+                    'T3EnergyProduction',
+                }
+            }
+        }
+    },
+    Builder { -- T1 Hydro
+        BuilderName = 'DalliEngineerBuildersHydro',
+        PlatoonTemplate = 'DalliEngineerHydroBuilder',
+        Priority = 1,
+        InstanceCount = 1,
+        BuilderConditions = {
+            --{ DBC, 'EngineerPgenCoordinator', {}}
+        },
+        BuilderType = 'Any',
+        BuilderData = {
+            NeedGuard = false,
+            DesiresAssist = true,
+            Construction = {
+                BuildClose = false,
+                BuildStructures = {
+                    'T1HydroCarbon',
                 }
             }
         }
@@ -97,6 +158,28 @@ BuilderGroup {
                 BuildClose = true,
                 BuildStructures = {
                     'T1LandFactory',
+                }
+            }
+        }
+    },
+    Builder { -- T1 Air Fac
+        BuilderName = 'DalliEngineerBuildersT1AirFactory',
+        PlatoonTemplate = 'DalliEngineerAirFactoryT1Builder',
+        Priority = 1300,
+        InstanceCount = 1000,
+        BuilderConditions = {
+            { DBC, 'EngineerAirFactoryCoordinator', {}},
+        },
+        BuilderType = 'Any',
+        BuilderData = {
+            NeedGuard = false,
+            DesiresAssist = true,
+            Construction = {
+                BuildClose = false,
+                BuildStructures = {
+                    'T1EnergyProduction',
+                    'T1AirFactory',
+                    'T1EnergyProduction',
                 }
             }
         }

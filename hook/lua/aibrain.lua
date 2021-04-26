@@ -74,7 +74,7 @@ DalliBrain = Class({
         self.aiBrain = aiBrain
         self:InitialiseEconomyFeatureManager()
         self:InitialiseMapFeatureManager()
-        self:InitialiseLandFeatureManager()
+        self:InitialiseUnitFeatureManager()
         self:InitialiseLandProductionController()
         self:InitialiseAirProductionController()
         self:InitialiseBaseProductionController()
@@ -83,7 +83,7 @@ DalliBrain = Class({
     InitialiseThreads = function(self)
         self:ForkThread(self.EconomyFeatureManagerThread)
         self:ForkThread(self.MapFeatureManagerThread)
-        self:ForkThread(self.LandFeatureManagerThread)
+        self:ForkThread(self.UnitFeatureManagerThread)
         self:ForkThread(self.OperationsThread)
     end,
 
@@ -105,24 +105,45 @@ DalliBrain = Class({
             s1 = 0,
             -- tanks
             t1 = 0, t2 = 0, t3 = 0,
-            --indirect
+            -- indirect
             i1 = 0, i2 = 0, i3 = 0,
-            --aa1
+            -- aa1
             a1 = 0, a2 = 0, a3 = 0,
         }
     end,
 
     LandProductionControllerFunction = function(self)
-        self.lpc.t1 = 10000
-        self.lpc.s1 = math.min(3,self.efm.mass.investment.land/200)+self.efm.mass.investment.land/2000 - self.lfm.t1.s + 1
-        self.lpc.i1 = self.efm.mass.investment.land/100 - self.lfm.t1.i - 6
-        self.lpc.a1 = self.efm.mass.investment.land/600 - self.lfm.t1.a - 2
+        -- Tech 1
+        self.lpc.t1 = 100
+        self.lpc.t2 = 100
+        self.lpc.t3 = 100
+        self.lpc.s1 = math.min(3,self.efm.mass.investment.land/200)+self.efm.mass.investment.land/3000 - self.ufm.land.t1.s + 1
+        self.lpc.i1 = self.ufm.land.t1.t + self.ufm.land.t2.t + self.ufm.land.t3.t - self.ufm.land.t1.i - 6
+        if self.efm.bp.land.t2 + self.efm.bp.land.t3 > 0 then
+            self.lpc.a1 = 0
+            self.lpc.a2 = self.efm.mass.investment.land/1800 - self.ufm.land.t2.a
+        else
+            self.lpc.a1 = self.efm.mass.investment.land/600 - self.ufm.land.t1.a - 2
+            self.lpc.a2 = 0
+        end
     end,
 
     InitialiseAirProductionController = function(self)
+        self.apc = {
+            -- scouts
+            s1 = 0,
+            -- inties
+            i1 = 0,
+            -- bombers
+            b1 = 0,
+        }
     end,
 
     AirProductionControllerFunction = function(self)
+        -- Tech 1
+        self.apc.i1 = 1
+        self.apc.s1 = math.min(1,self.efm.mass.investment.air/200)+self.efm.mass.investment.air/1000 - self.ufm.air.t1.s + 1
+        self.apc.b1 = self.ufm.air.t1.i - self.ufm.air.t1.b - 1
     end,
 
     InitialiseBaseProductionController = function(self)
@@ -137,6 +158,8 @@ DalliBrain = Class({
             e1 = 0, e2 = 0, e3 = 0,
             -- land factory build numbers
             lf1 = 0, lf2 = 0, lf3 = 0,
+            -- air factory build numbers
+            af1 = 0, af2 = 0, af3 = 0,
             -- mex upgrade numbers
             mu1 = 0, mu2 = 0,
         }
@@ -149,7 +172,7 @@ DalliBrain = Class({
             3. Unit investment amounts
             4. Mex upgrades
             5. Factory upgrades
-            
+
         Layout as follows:
             1. Mex expansion targets (how many engies tgo allocate to this)
             2. Pgen construction targets (how many to be building, assists on these, the desired tech level of these)
@@ -161,11 +184,11 @@ DalliBrain = Class({
     ]]
     BaseProductionControllerFunction = function(self)
         local engiesRequired = { t1 = 4, t2 = 1, t3 = 1 }
-    
+
         -- Mex expansion stuff, no more than 10 engies on this please
         self.bpc.m1 = math.min(self.mfm.mex.available,10)
         engiesRequired.t1 = engiesRequired.t1 + self.bpc.m1
-        
+
         --[[
             Power generation stuff
             Strategy here is:
@@ -195,9 +218,9 @@ DalliBrain = Class({
         else
             -- Peasants in da house
             -- We'll be building t1 pgens only.  Minimum requirements on engies so we're not wasting early engies on pgens
-            if self.efm.bp.engie.t1 > 4 then
+            if self.efm.bp.engie.t1 > 3 then
                 self.bpc.p1 = 1
-                if self.efm.energy.income < self.efm.energy.spend+80 and self.efm.bp.engie.t1 > 8 then
+                if self.efm.energy.income < self.efm.energy.spend and self.efm.bp.engie.t1 > 6 then
                     self.bpc.p1 = 3
                 elseif self.efm.energy.income < self.efm.energy.spend then
                     self.bpc.p1 = 2
@@ -207,10 +230,10 @@ DalliBrain = Class({
         engiesRequired.t1 = engiesRequired.t1 + self.bpc.p1
         -- TODO: some pgen assist logic, in particular to help with higher tier pgens
         -- TODO: some controls to prevent double dipping on building pgens (e.g. building second before effects of first come through)
-        
+
         -- Cap mex engies to make sure we have a couple spare
         self.bpc.m1 = math.min(math.max(self.efm.bp.engie.t1-4,4),self.bpc.m1)
-        
+
         -- Mass allocation stuff here
         self.bpc.lf1 = 0
         if self.efm.bp.engie.t1 >= 3 and self.efm.mass.storage > 200 then
@@ -222,10 +245,73 @@ DalliBrain = Class({
                 self.bpc.lf1 = 1
             end
         end
+        -- Cap lf1 based on numbers of engies currently produced
         self.bpc.lf1 = math.min(self.bpc.lf1, self.efm.bp.engie.t1-3)
-        engiesRequired.t1 = engiesRequired.t1 + self.bpc.lf1
-        -- TODO: learn to spend mass on something that isn't a t1 land factory
-        
+        -- Cap lf1 based on numbers of factories vs mexes
+        local mexToLandFacRatio = 2.5
+        self.bpc.lf1 = math.min(self.bpc.lf1, math.round((self.efm.bp.mex.total+self.bpc.m1)/mexToLandFacRatio)-self.efm.bp.land.total)
+        local airRatio = 2
+        local initLand = 2.5
+        self.bpc.af1 = (self.efm.bp.land.total-initLand)/airRatio - self.efm.bp.air.total
+        engiesRequired.t1 = engiesRequired.t1 + self.bpc.lf1 + self.bpc.af1
+
+        -- Mass investment stuff
+        local t2MexRate = 10
+        local t3MexRate = 24
+        local t2FacRate = 12
+        local t3FacRate = 17
+        -- Determine amount of mass to be investing with
+        local basicMassThreshold
+        if self.mfm.mex.available <= 2 then basicMassThreshold = 10
+        elseif self.mfm.mex.available <= 6 then basicMassThreshold = 30
+        else basicMassThreshold = 40 end
+        local investRate = 0.3
+        local investAmount = investRate * (self.efm.mass.income - basicMassThreshold)
+        --LOG("Invest Amount: 0.3 * ("..tostring(self.efm.mass.income).." - "..tostring(basicMassThreshold)..") = "..tostring(investAmount))
+        -- Determine what to invest in
+        self.bpc.lf2 = 0
+        self.bpc.lf3 = 0
+        if investAmount > 0 then
+            -- Deduct upgrades first
+            if self.efm.bp.land.t3 > 0 then
+                -- no upgrades required
+            elseif self.efm.bp.land.t2 > 0 then
+                -- T3 upgrade?
+                if self.efm.mass.income > 100 or self.efm.bp.mex.t3 >= 2 then
+                    self.bpc.lf3 = 1
+                    investAmount = investAmount - t3FacRate
+                end
+            else
+                -- T2 upgrade?
+                if self.efm.bp.mex.t2 >= 2 then
+                    self.bpc.lf2 = 1
+                    investAmount = investAmount - t2FacRate
+                end
+            end
+        end
+        -- Distribute remaining mass to mex upgrades
+        self.bpc.mu1 = 0
+        self.bpc.mu2 = 0
+        while investAmount > 0 do
+            if self.efm.bp.mex.t2 + self.bpc.mu1 - self.bpc.mu2 > self.efm.bp.mex.t1 * 3 then
+                -- invest in another t3 mex
+                self.bpc.mu2 = self.bpc.mu2 + 1
+                investAmount = investAmount - t3MexRate
+            elseif self.efm.bp.mex.t1 > 0 then
+                -- invest in another t2 mex
+                self.bpc.mu1 = self.bpc.mu1 + 1
+                investAmount = investAmount - t2MexRate
+            else
+                -- Nothing left to invest in =/
+                investAmount = 0
+            end
+        end
+        -- Now do a last check to add additional teching if we're really mex constrained (tiny maps)
+        if self.bpc.mu1 == 0 and self.bpc.m1 <= 2 then
+            self.bpc.mu1 = 1
+        end
+        --LOG("mu1/mu2/lf2/lf3 : "..tostring(self.bpc.mu1).."/"..tostring(self.bpc.mu2).."/"..tostring(self.bpc.lf2).."/"..tostring(self.bpc.lf3))
+
         --[[
             Engineer production numbers.
             Since the engineer builders are higher priority than units, we need to go back and constrain the 'engiesRequired' numbers
@@ -233,25 +319,32 @@ DalliBrain = Class({
             expansion, but we also need to think about building some raiders too.
          ]]
         self.bpc.e1 = math.min(engiesRequired.t1,2+self.efm.mass.investment.land/100) - self.efm.bp.engie.t1
-        self.bpc.e2 = engiesRequired.t2
-        self.bpc.e3 = engiesRequired.t3
+        self.bpc.e2 = engiesRequired.t2 - self.efm.bp.engie.t2
+        self.bpc.e3 = engiesRequired.t3 - self.efm.bp.engie.t3
     end,
 
-    InitialiseLandFeatureManager = function(self)
-        self.lfm = {
-            -- scout, tank, indirect, anti-air
-            t1 = { s = 0, t = 0, i = 0, a = 0, },
-            t2 = { s = 0, t = 0, i = 0, a = 0, },
-            t3 = { s = 0, t = 0, i = 0, a = 0, },
+    InitialiseUnitFeatureManager = function(self)
+        self.ufm = {
+            land = {
+                -- scout, tank, indirect, anti-air
+                t1 = { s = 0, t = 0, i = 0, a = 0, },
+                t2 = { s = 0, t = 0, i = 0, a = 0, },
+                t3 = { s = 0, t = 0, i = 0, a = 0, },
+            },
+            air = {
+                t1 = { s = 0, i = 0, b = 0 },
+                t2 = { s = 0, i = 0, b = 0 },
+                t3 = { s = 0, i = 0, b = 0 },
+            },
         }
     end,
 
-    LandFeatureManagerThread = function(self)
+    UnitFeatureManagerThread = function(self)
         local i = 0
         local k = 0
         while self.aiBrain.Result ~= "defeat" do
-            self:InitialiseLandFeatureManager()
-            local units = self.aiBrain:GetListOfUnits(categories.MOBILE*categories.LAND,false,true)
+            self:InitialiseUnitFeatureManager()
+            local units = self.aiBrain:GetListOfUnits(categories.MOBILE*categories.LAND,false)
             for _, unit in units do
                 local isT1 = EntityCategoryContains(categories.TECH1,unit)
                 local isT2 = EntityCategoryContains(categories.TECH2,unit)
@@ -261,34 +354,49 @@ DalliBrain = Class({
                 local isArtillery = EntityCategoryContains(categories.INDIRECTFIRE,unit)
                 local isAntiAir = EntityCategoryContains(categories.ANTIAIR,unit)
                 if isT1 then
-                    if isScout then self.lfm.t1.s = self.lfm.t1.s + 1
-                    elseif isAntiAir then self.lfm.t1.a = self.lfm.t1.a + 1
-                    elseif isArtillery then self.lfm.t1.i = self.lfm.t1.i + 1
-                    elseif isTank then self.lfm.t1.t = self.lfm.t1.t + 1
+                    if isScout then self.ufm.land.t1.s = self.ufm.land.t1.s + 1
+                    elseif isAntiAir then self.ufm.land.t1.a = self.ufm.land.t1.a + 1
+                    elseif isArtillery then self.ufm.land.t1.i = self.ufm.land.t1.i + 1
+                    elseif isTank then self.ufm.land.t1.t = self.ufm.land.t1.t + 1
                     end
                 elseif isT2 then
-                    if isScout then self.lfm.t2.s = self.lfm.t2.s + 1
-                    elseif isArtillery then self.lfm.t2.i = self.lfm.t2.i + 1
-                    elseif isAntiAir then self.lfm.t2.a = self.lfm.t2.a + 1
-                    elseif isTank then self.lfm.t2.t = self.lfm.t2.t + 1
+                    if isScout then self.ufm.land.t2.s = self.ufm.land.t2.s + 1
+                    elseif isArtillery then self.ufm.land.t2.i = self.ufm.land.t2.i + 1
+                    elseif isAntiAir then self.ufm.land.t2.a = self.ufm.land.t2.a + 1
+                    elseif isTank then self.ufm.land.t2.t = self.ufm.land.t2.t + 1
                     end
                 elseif isT3 then
-                    if isScout then self.lfm.t3.s = self.lfm.t3.s + 1
-                    elseif isArtillery then self.lfm.t3.i = self.lfm.t3.i + 1
-                    elseif isAntiAir then self.lfm.t3.a = self.lfm.t3.a + 1
-                    elseif isTank then self.lfm.t3.t = self.lfm.t3.t + 1
+                    if isScout then self.ufm.land.t3.s = self.ufm.land.t3.s + 1
+                    elseif isArtillery then self.ufm.land.t3.i = self.ufm.land.t3.i + 1
+                    elseif isAntiAir then self.ufm.land.t3.a = self.ufm.land.t3.a + 1
+                    elseif isTank then self.ufm.land.t3.t = self.ufm.land.t3.t + 1
                     end
                 end
             end
-            i = i+1
-            k = k+1
-            local logging = false
-            if logging and k >=20 then
-                k = 0
-                LOG("====================  LOGGING LFM OUTPUT  ====================")
-                LOG("self.lfm.t1 = { s = "..tostring(self.lfm.t1.s)..", t = "..tostring(self.lfm.t1.t)..", i = "..tostring(self.lfm.t1.i)..", a = "..tostring(self.lfm.t1.a).." }")
-                LOG("self.lfm.t2 = { s = "..tostring(self.lfm.t2.s)..", t = "..tostring(self.lfm.t2.t)..", i = "..tostring(self.lfm.t2.i)..", a = "..tostring(self.lfm.t2.a).." }")
-                LOG("self.lfm.t3 = { s = "..tostring(self.lfm.t3.s)..", t = "..tostring(self.lfm.t3.t)..", i = "..tostring(self.lfm.t3.i)..", a = "..tostring(self.lfm.t3.a).." }")
+            local units = self.aiBrain:GetListOfUnits(categories.MOBILE*categories.AIR,false)
+            for _, unit in units do
+                local isT1 = EntityCategoryContains(categories.TECH1,unit)
+                local isT2 = EntityCategoryContains(categories.TECH2,unit)
+                local isT3 = EntityCategoryContains(categories.TECH3,unit)
+                local isScout = EntityCategoryContains(categories.SCOUT,unit)
+                local isBomber = EntityCategoryContains(categories.BOMBER,unit)
+                local isIntie = EntityCategoryContains(categories.ANTIAIR,unit)
+                if isT1 then
+                    if isScout then self.ufm.air.t1.s = self.ufm.air.t1.s + 1
+                    elseif isBomber then self.ufm.air.t1.b = self.ufm.air.t1.b + 1
+                    elseif isIntie then self.ufm.air.t1.i = self.ufm.air.t1.i + 1
+                    end
+                elseif isT2 then
+                    if isScout then self.ufm.air.t2.s = self.ufm.air.t2.s + 1
+                    elseif isBomber then self.ufm.air.t2.b = self.ufm.air.t2.b + 1
+                    elseif isIntie then self.ufm.air.t2.i = self.ufm.air.t2.i + 1
+                    end
+                elseif isT3 then
+                    if isScout then self.ufm.air.t3.s = self.ufm.air.t3.s + 1
+                    elseif isBomber then self.ufm.air.t3.b = self.ufm.air.t3.b + 1
+                    elseif isIntie then self.ufm.air.t3.i = self.ufm.air.t3.i + 1
+                    end
+                end
             end
             WaitTicks(5)
         end
@@ -355,9 +463,10 @@ DalliBrain = Class({
                 storage = 0,
             },
             bp = {
-                land = 0,
-                air = 0,
+                land = {t1=0, t2=0, t3=0, total=0},
+                air = {t1=0, t2=0, t3=0, total=0},
                 engie = {t1=0, t2=0, t3=0},
+                mex = {t1=0, t2=0, t3=0, total=0},
             },
         }
     end,
@@ -366,16 +475,28 @@ DalliBrain = Class({
         local i = 0
         local k = 0
         while self.aiBrain.Result ~= "defeat" do
-            local units = self.aiBrain:GetListOfUnits(categories.SELECTABLE,true,true)
+            local units = self.aiBrain:GetListOfUnits(categories.SELECTABLE,true)
             local massIncome = 0
             local energyIncome = 0
             local massSpend = { total = 0, land = 0, air = 0, engie = 0, other = 0 }
             local energySpend = 0
             local massInvestment = { total = 0, land = 0, air = 0, base = 0, other = 0 }
             local energyInvestment = 0
+            self.efm.bp.mex.t1 = 0
+            self.efm.bp.mex.t2 = 0
+            self.efm.bp.mex.t3 = 0
+            self.efm.bp.mex.total = 0
             self.efm.bp.engie.t1 = 0
             self.efm.bp.engie.t2 = 0
             self.efm.bp.engie.t3 = 0
+            self.efm.bp.land.t1 = 0
+            self.efm.bp.land.t2 = 0
+            self.efm.bp.land.t3 = 0
+            self.efm.bp.land.total = 0
+            self.efm.bp.air.t1 = 0
+            self.efm.bp.air.t2 = 0
+            self.efm.bp.air.t3 = 0
+            self.efm.bp.air.total = 0
             for _, unit in units do
                 -- Muh blueprint
                 local unitBP = unit:GetBlueprint()
@@ -385,6 +506,7 @@ DalliBrain = Class({
                 local isCom = EntityCategoryContains(categories.COMMAND,unit)
                 local isLand = EntityCategoryContains(categories.LAND*categories.MOBILE - categories.ENGINEER,unit)
                 local isAir = EntityCategoryContains(categories.AIR*categories.MOBILE,unit)
+                local isMex = EntityCategoryContains(categories.MASSEXTRACTION,unit)
                 local isStructure = EntityCategoryContains(categories.STRUCTURE,unit)
                 -- 1. Update income
                 massIncome = massIncome + unit:GetProductionPerSecondMass()
@@ -416,7 +538,7 @@ DalliBrain = Class({
                     else
                         massInvestment.other = massInvestment.other + mI
                     end
-                    
+
                     -- update bp
                     if isEngie then
                         if EntityCategoryContains(categories.TECH1,unit) then
@@ -425,6 +547,33 @@ DalliBrain = Class({
                             self.efm.bp.engie.t2 = self.efm.bp.engie.t2 + 1
                         elseif EntityCategoryContains(categories.TECH3,unit) then
                             self.efm.bp.engie.t3 = self.efm.bp.engie.t3 + 1
+                        end
+                    elseif isLandFac then
+                        self.efm.bp.land.total = self.efm.bp.land.total + 1
+                        if EntityCategoryContains(categories.TECH1,unit) then
+                            self.efm.bp.land.t1 = self.efm.bp.land.t1 + 1
+                        elseif EntityCategoryContains(categories.TECH2,unit) then
+                            self.efm.bp.land.t2 = self.efm.bp.land.t2 + 1
+                        elseif EntityCategoryContains(categories.TECH3,unit) then
+                            self.efm.bp.land.t3 = self.efm.bp.land.t3 + 1
+                        end
+                    elseif isAirFac then
+                        self.efm.bp.air.total = self.efm.bp.air.total + 1
+                        if EntityCategoryContains(categories.TECH1,unit) then
+                            self.efm.bp.air.t1 = self.efm.bp.air.t1 + 1
+                        elseif EntityCategoryContains(categories.TECH2,unit) then
+                            self.efm.bp.air.t2 = self.efm.bp.air.t2 + 1
+                        elseif EntityCategoryContains(categories.TECH3,unit) then
+                            self.efm.bp.air.t3 = self.efm.bp.air.t3 + 1
+                        end
+                    elseif isMex then
+                        self.efm.bp.mex.total = self.efm.bp.mex.total + 1
+                        if EntityCategoryContains(categories.TECH1,unit) then
+                            self.efm.bp.mex.t1 = self.efm.bp.mex.t1 + 1
+                        elseif EntityCategoryContains(categories.TECH2,unit) then
+                            self.efm.bp.mex.t2 = self.efm.bp.mex.t2 + 1
+                        elseif EntityCategoryContains(categories.TECH3,unit) then
+                            self.efm.bp.mex.t3 = self.efm.bp.mex.t3 + 1
                         end
                     end
                 end
