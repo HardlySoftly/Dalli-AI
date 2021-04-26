@@ -186,7 +186,7 @@ BuilderGroup {
         BuilderName = 'T1LandSupportUpgrade',
         PlatoonTemplate = 'T1LandFactoryUpgrade',
         Priority = 3000,
-        InstanceCount = 2,
+        InstanceCount = 1,
         BuilderData = {
             OverideUpgradeBlueprint = { 'zeb9501', 'zab9501', 'zrb9501', 'zsb9501', 'znb9501' }, -- overides Upgrade blueprint for all 5 factions. Used for support factories
         },
@@ -199,7 +199,7 @@ BuilderGroup {
         BuilderName = 'T2LandSupportUpgrade',
         PlatoonTemplate = 'T2SupportLandFactoryUpgrade',
         Priority = 3000,
-        InstanceCount = 2,
+        InstanceCount = 1,
         BuilderData = {
             OverideUpgradeBlueprint = { 'zeb9601', 'zab9601', 'zrb9601', 'zsb9601', 'znb9601' }, -- overides Upgrade blueprint for all 5 factions. Used for support factories
         },
