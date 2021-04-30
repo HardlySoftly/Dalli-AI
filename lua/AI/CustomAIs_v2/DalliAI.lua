@@ -7,4 +7,10 @@ AI = {
             name = 'AI: Dalli',
         },
     },
+    CheatAIList = {
+        {
+            key = 'dallicheat',
+            name = 'AIx: Dalli',
+        },
+    },
 }

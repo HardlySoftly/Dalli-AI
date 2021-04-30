@@ -170,6 +170,7 @@ BuilderGroup {
         BuilderConditions = {
             { DBC, 'T1LandUpgradeCoordinator', {} },
         },
+        FormRadius = 1000000,
         BuilderType = 'Any',
     },
     Builder {
@@ -180,6 +181,7 @@ BuilderGroup {
         BuilderConditions = {
             { DBC, 'T2LandUpgradeCoordinator', {} },
         },
+        FormRadius = 1000000,
         BuilderType = 'Any',
     },
     Builder {
@@ -193,6 +195,7 @@ BuilderGroup {
         BuilderConditions = {
             { DBC, 'T1SupportLandUpgradeCoordinator', {} },
         },
+        FormRadius = 1000000,
         BuilderType = 'Any',
     },
     Builder {
@@ -206,6 +209,7 @@ BuilderGroup {
         BuilderConditions = {
             { DBC, 'T2SupportLandUpgradeCoordinator', {} },
         },
+        FormRadius = 1000000,
         BuilderType = 'Any',
     },
 }

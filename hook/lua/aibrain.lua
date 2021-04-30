@@ -246,7 +246,9 @@ DalliBrain = Class({
             end
         end
         -- Cap lf1 based on numbers of engies currently produced
-        self.bpc.lf1 = math.min(self.bpc.lf1, self.efm.bp.engie.t1-3)
+        if self.efm.mass.income < self.efm.mass.spend.total+100 then
+            self.bpc.lf1 = math.min(self.bpc.lf1, self.efm.bp.engie.t1-3)
+        end
         -- Cap lf1 based on numbers of factories vs mexes
         local mexToLandFacRatio = 2.5
         self.bpc.lf1 = math.min(self.bpc.lf1, math.round((self.efm.bp.mex.total+self.bpc.m1)/mexToLandFacRatio)-self.efm.bp.land.total)
