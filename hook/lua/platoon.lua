@@ -1,12 +1,13 @@
-YeOldePlatoonClass = Platoon
+DalliYeOldePlatoonClass = Platoon
 local SUtils = import('/lua/AI/sorianutilities.lua')
-Platoon = Class(YeOldePlatoonClass) {
+local DalliFileUtils = import('/mods/DalliAI/lua/AI/DalliUtilities.lua')
+Platoon = Class(DalliYeOldePlatoonClass) {
     --[[
       This is a copy paste of EngineerBuildAI that has then had a bunch of stuff ripped out, and a while loop added in near the bottom.
 
       I'll explain later.....
     ]]
-    DalliEngineerMexAI = function(self)
+    DalliFuncEngineerMexAI = function(self)
         local aiBrain = self:GetBrain()
         local platoonUnits = self:GetPlatoonUnits()
         local armyIndex = aiBrain:GetArmyIndex()
@@ -149,7 +150,7 @@ Platoon = Class(YeOldePlatoonClass) {
 
 
 -- So I didn't want these next 4 functions, but I have some really annoying problem with the initial BO getting cancelled partway through that I'm trying to fix so...
-    EngineerBuildAIDalli = function(self)
+    DalliFuncEngineerBuildAI = function(self)
         local aiBrain = self:GetBrain()
         local platoonUnits = self:GetPlatoonUnits()
         local armyIndex = aiBrain:GetArmyIndex()
@@ -458,7 +459,7 @@ Platoon = Class(YeOldePlatoonClass) {
         end
 
         --LOG("*AI DEBUG: Setting up Callbacks for " .. eng.Sync.id)
-        self.SetupEngineerCallbacksDalli(eng)
+        self.DalliFuncSetupEngineerCallbacks(eng)
 
         -------- BUILD BUILDINGS HERE --------
         for baseNum, baseListData in baseTmplList do
@@ -501,9 +502,9 @@ Platoon = Class(YeOldePlatoonClass) {
         end
     end,
 
-    SetupEngineerCallbacksDalli = function(eng)
+    DalliFuncSetupEngineerCallbacks = function(eng)
         if eng and not eng.Dead and not eng.BuildDoneCallbackSet and eng.PlatoonHandle and eng:GetAIBrain():PlatoonExists(eng.PlatoonHandle) then
-            import('/lua/ScenarioTriggers.lua').CreateUnitBuiltTrigger(eng.PlatoonHandle.EngineerBuildDoneDalli, eng, categories.ALLUNITS)
+            import('/lua/ScenarioTriggers.lua').CreateUnitBuiltTrigger(eng.PlatoonHandle.DalliFuncEngineerBuildDone, eng, categories.ALLUNITS)
             eng.BuildDoneCallbackSet = true
         end
         if eng and not eng.Dead and not eng.CaptureDoneCallbackSet and eng.PlatoonHandle and eng:GetAIBrain():PlatoonExists(eng.PlatoonHandle) then
@@ -520,19 +521,19 @@ Platoon = Class(YeOldePlatoonClass) {
         end
     end,
 
-    EngineerBuildDoneDalli = function(unit, params)
+    DalliFuncEngineerBuildDone = function(unit, params)
         if not unit.PlatoonHandle then
             LOG("No platoon handle")
             return
         end
         --LOG("*AI DEBUG: Build done " .. unit.Sync.id)
         if not unit.ProcessBuild then
-            unit.ProcessBuild = unit:ForkThread(unit.PlatoonHandle.ProcessBuildCommandDalli, true)
+            unit.ProcessBuild = unit:ForkThread(unit.PlatoonHandle.DalliFuncProcessBuildCommand, true)
             unit.ProcessBuildDone = true
         end
     end,
 
-    ProcessBuildCommandDalli = function(eng, removeLastBuild)
+    DalliFuncProcessBuildCommand = function(eng, removeLastBuild)
         --DUNCAN - Trying to stop commander leaving projects
         if not eng or eng.Dead or not eng.PlatoonHandle or eng.GoingHome or eng.UnitBeingBuiltBehavior or eng:IsUnitState("Upgrading") or eng:IsUnitState("Enhancing") or eng:IsUnitState("Guarding") then
             if eng then eng.ProcessBuild = nil end
@@ -621,6 +622,155 @@ Platoon = Class(YeOldePlatoonClass) {
             return
         end
         if eng then eng.ProcessBuild = nil end
+    end,
+
+    DalliFuncStrikeForceDebug = function(self)
+        local aiBrain = self:GetBrain()
+        while aiBrain:PlatoonExists(self) do
+            -- Draw line to target
+            if self.DalliData.pos and self.DalliData.target and not self.DalliData.target:IsDead() then
+                DrawLine(self.DalliData.pos,self.DalliData.target:GetPosition(),'aa888888')
+            end
+            -- Draw our threat circle
+            if self.DalliData.pos and self.DalliData.ourThreat then
+                DrawCircle(self.DalliData.pos,self.DalliData.ourThreat,'aa00ff00')
+            end
+            -- Draw their threat circle
+            if self.DalliData.pos and self.DalliData.theirThreat then
+                DrawCircle(self.DalliData.pos,self.DalliData.theirThreat,'aaff0000')
+            end
+            -- Draw line to next pos
+            if self.DalliData.pos and self.DalliData.nextPos then
+                DrawLinePop(self.DalliData.pos,self.DalliData.nextPos,'aaffffff')
+            end
+            -- Draw line to enemy threat
+            if self.DalliData.pos and self.DalliData.threatPos and self.DalliData.theirThreat > 0 then
+                DrawLinePop(self.DalliData.pos,self.DalliData.threatPos,'aaff0000')
+            end
+            WaitTicks(2)
+        end
+    end,
+
+    -- Doesn't work...
+    DalliFuncAttemptMergePlatoon = function(self,radius)
+        local aiBrain = self:GetBrain()
+        local other
+        local best = radius*radius
+        local ps = aiBrain:GetPlatoonsList()
+        for _, p in ps do
+            if aiBrain:PlatoonExists(p) and p.DalliData and p.DalliData.name and p.DalliData.name == self.DalliData.name then
+                -- Merge candidate
+                local delta = VDiff(self:GetPlatoonPosition(),p:GetPlatoonPosition())
+                local dist = delta[1]*delta[1] + delta[2]*delta[2] + delta[3]*delta[3]
+                -- dist > 0 filters out ourselves
+                if dist > 0 and dist < best then
+                    best = dist
+                    other = p
+                end
+            end
+        end
+        if other then
+            -- actually merge
+            local units = self:GetPlatoonUnits()
+            aiBrain:AssignUnitsToPlatoon(other,units,'attack','none')
+            self:PlatoonDisbandNoAssign()
+        end
+    end,
+
+    DalliFuncLandAssaultAI = function(self)
+        local aiBrain = self:GetBrain()
+        local armyIndex = aiBrain:GetArmyIndex()
+        local data = self.PlatoonData
+        local categoryList = {}
+        local atkPri = {}
+        if data.PrioritizedCategories then
+            for k,v in data.PrioritizedCategories do
+                table.insert( atkPri, v )
+                table.insert( categoryList, ParseEntityCategory( v ) )
+            end
+        end
+        table.insert( atkPri, 'ALLUNITS' )
+        table.insert( categoryList, categories.ALLUNITS)
+        self:SetPrioritizedTargetList( 'Attack', categoryList )
+        local target
+        local X = 40
+        local confidence = 1.1
+        local movingToScout = false
+        self.DalliData = { target = nil, ourThreat = 0, theirThreat = 0, pos = nil, nextPos = nil, threatPos = nil, name = 'DalliConstLandAssaultAI'}
+        if aiBrain.DalliBrain.debug then
+            self:ForkThread(self.DalliFuncStrikeForceDebug)
+        end
+        while aiBrain:PlatoonExists(self) do
+            self.DalliData.target = nil
+            self.DalliData.ourThreat = 0
+            self.DalliData.theirThreat = 0
+            self.DalliData.pos = nil
+            self.DalliData.nextPos = nil
+            self.DalliData.threatPos = nil
+            -- Search for platoons to merge with
+            --self:DalliFuncAttemptMergePlatoon(X/2)
+            -- update target
+            if not target or target:IsDead() then
+                if aiBrain:GetCurrentEnemy() and aiBrain:GetCurrentEnemy():IsDefeated() then
+                    aiBrain:PickEnemyLogic()
+                end
+                local mult = { 4,10,25,1000 }
+                for _,i in mult do
+                    target = AIUtils.AIFindBrainTargetInRange( aiBrain, self, 'Attack', X * i, atkPri, aiBrain:GetCurrentEnemy() )
+                    self.DalliData.target = target
+                    if target then
+                        break
+                    end
+                    WaitSeconds(3)
+                    if not aiBrain:PlatoonExists(self) then
+                        return
+                    end
+                end
+                if target then
+                    self:Stop()
+                    if not data.UseMoveOrder then
+                        self:AttackTarget( target )
+                    else
+                        self:MoveToLocation( table.copy( target:GetPosition() ), false)
+                    end
+                    movingToScout = false
+                elseif not movingToScout then
+                    movingToScout = true
+                    self:Stop()
+                    for k,v in AIUtils.AIGetSortedMassLocations(aiBrain, 10, nil, nil, nil, nil, self:GetPlatoonPosition()) do
+                        if v[1] < 0 or v[3] < 0 or v[1] > ScenarioInfo.size[1] or v[3] > ScenarioInfo.size[2] then
+                            #LOG('*AI DEBUG: STRIKE FORCE SENDING UNITS TO WRONG LOCATION - ' .. v[1] .. ', ' .. v[3] )
+                        end
+                        self:MoveToLocation( (v), false )
+                    end
+                end
+            end
+            -- update threat info
+            local pos = self:GetPlatoonPosition()
+            self.DalliData.pos = pos
+            local ourUnits = DalliFileUtils.DalliFuncGetAlliedUnits(armyIndex,DalliFileUtils.DalliFuncGetUnitsInRadius(pos,X))
+            local ourThreatData = DalliFileUtils.DalliFuncGetLandWeightedLocation(ourUnits)
+            self.DalliData.ourThreat = ourThreatData.threat
+            if target and not target:IsDead() then
+                local newPos = DalliFileUtils.DalliFuncGetFuturePos(pos,target:GetPosition(),X)
+                self.DalliData.nextPos = newPos
+                local theirUnits = DalliFileUtils.DalliFuncGetEnemyUnits(armyIndex,DalliFileUtils.DalliFuncGetUnitsInRadius(newPos,X))
+                local theirThreatData = DalliFileUtils.DalliFuncGetLandWeightedLocation(theirUnits)
+                self.DalliData.threatPos = theirThreatData.pos
+                self.DalliData.theirThreat = theirThreatData.threat
+                local ourOverallUnits = DalliFileUtils.DalliFuncGetAlliedUnits(armyIndex,DalliFileUtils.DalliFuncGetUnitsInRadius(newPos,2*X))
+                local ourOverallThreatData = DalliFileUtils.DalliFuncGetLandWeightedLocation(ourOverallUnits)
+                -- retreat
+                if confidence*ourThreatData.threat < theirThreatData.threat and ourOverallThreatData.threat < theirThreatData.threat*confidence then
+                    self:Stop()
+                    local retreatPos = DalliFileUtils.DalliFuncGetFuturePos(theirThreatData.pos,pos,X*2)
+                    self:MoveToLocation( retreatPos, false)
+                    target = nil
+                    self.DalliData.target = target
+                end
+            end
+            WaitSeconds(3)
+        end
     end,
 
 }

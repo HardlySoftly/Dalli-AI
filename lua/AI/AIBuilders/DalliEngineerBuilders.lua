@@ -4,12 +4,12 @@ local SAI = '/lua/ScenarioPlatoonAI.lua'
 
 -- Commander Builders
 BuilderGroup {
-    BuilderGroupName = 'DalliCommanderBuilders',
+    BuilderGroupName = 'DalliConstCommanderBuilders',
     BuildersType = 'EngineerBuilder',
     -- The initial build order
     Builder {
-        BuilderName = 'DalliCommanderBaseSetupBuilderBase',
-        PlatoonTemplate = 'CommanderBuilderDalli',
+        BuilderName = 'DalliConstCommanderBaseSetupBuilderBase',
+        PlatoonTemplate = 'DalliConstCommanderBuilder',
         Priority = 10000,
         BuilderConditions = {
                 { IBC, 'NotPreBuilt', {}},
@@ -41,11 +41,11 @@ BuilderGroup {
 
 -- Engineer Builders
 BuilderGroup {
-    BuilderGroupName = 'DalliEngineerBuilders',
+    BuilderGroupName = 'DalliConstEngineerBuilders',
     BuildersType = 'EngineerBuilder',
     Builder {
-        BuilderName = 'DalliEngineerBuildersMex',
-        PlatoonTemplate = 'DalliEngineerMexBuilder',
+        BuilderName = 'DalliConstEngineerBuildersMex',
+        PlatoonTemplate = 'DalliConstEngineerMexBuilder',
         Priority = 1000,
         InstanceCount = 1000,
         BuilderConditions = {
@@ -63,8 +63,8 @@ BuilderGroup {
         }
     },
     Builder { -- T1 Pgen
-        BuilderName = 'DalliEngineerBuildersPgenT1',
-        PlatoonTemplate = 'DalliEngineerPgenT1Builder',
+        BuilderName = 'DalliConstEngineerBuildersPgenT1',
+        PlatoonTemplate = 'DalliConstEngineerPgenT1Builder',
         Priority = 1500,
         InstanceCount = 1000,
         BuilderConditions = {
@@ -83,8 +83,8 @@ BuilderGroup {
         }
     },
     Builder { -- T2 Pgen
-        BuilderName = 'DalliEngineerBuildersPgenT2',
-        PlatoonTemplate = 'DalliEngineerPgenT2Builder',
+        BuilderName = 'DalliConstEngineerBuildersPgenT2',
+        PlatoonTemplate = 'DalliConstEngineerPgenT2Builder',
         Priority = 1500,
         InstanceCount = 1000,
         BuilderConditions = {
@@ -103,8 +103,8 @@ BuilderGroup {
         }
     },
     Builder { -- T3 Pgen
-        BuilderName = 'DalliEngineerBuildersPgenT3',
-        PlatoonTemplate = 'DalliEngineerPgenT3Builder',
+        BuilderName = 'DalliConstEngineerBuildersPgenT3',
+        PlatoonTemplate = 'DalliConstEngineerPgenT3Builder',
         Priority = 1500,
         InstanceCount = 1000,
         BuilderConditions = {
@@ -123,8 +123,8 @@ BuilderGroup {
         }
     },
     Builder { -- T1 Hydro
-        BuilderName = 'DalliEngineerBuildersHydro',
-        PlatoonTemplate = 'DalliEngineerHydroBuilder',
+        BuilderName = 'DalliConstEngineerBuildersHydro',
+        PlatoonTemplate = 'DalliConstEngineerHydroBuilder',
         Priority = 1,
         InstanceCount = 1,
         BuilderConditions = {
@@ -143,8 +143,8 @@ BuilderGroup {
         }
     },
     Builder { -- T1 Land Fac
-        BuilderName = 'DalliEngineerBuildersT1LandFactory',
-        PlatoonTemplate = 'DalliEngineerLandFactoryT1Builder',
+        BuilderName = 'DalliConstEngineerBuildersT1LandFactory',
+        PlatoonTemplate = 'DalliConstEngineerLandFactoryT1Builder',
         Priority = 1300,
         InstanceCount = 1000,
         BuilderConditions = {
@@ -163,8 +163,8 @@ BuilderGroup {
         }
     },
     Builder { -- T1 Air Fac
-        BuilderName = 'DalliEngineerBuildersT1AirFactory',
-        PlatoonTemplate = 'DalliEngineerAirFactoryT1Builder',
+        BuilderName = 'DalliConstEngineerBuildersT1AirFactory',
+        PlatoonTemplate = 'DalliConstEngineerAirFactoryT1Builder',
         Priority = 1300,
         InstanceCount = 1000,
         BuilderConditions = {

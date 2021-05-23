@@ -1,20 +1,20 @@
 BaseBuilderTemplate {
-    BaseTemplateName = 'Dalli',
+    BaseTemplateName = 'DalliConstBTN',
     Builders = {
         -- Commander Builders
-        'DalliCommanderBuilders',
+        'DalliConstCommanderBuilders',
         -- Engineer Builders
-        'DalliEngineerBuilders',
+        'DalliConstEngineerBuilders',
         -- Mex Upgrade Builders
-        'DalliMexUpgradeBuilders',
+        'DalliConstMexUpgradeBuilders',
         -- Factory Builders
-        'DalliFactoryEngineerBuilders',
-        'DalliFactoryLandSpamBuilders',
-        'DalliFactoryAirSpamBuilders',
-        'DalliLandUpgradeBuilders',
+        'DalliConstFactoryEngineerBuilders',
+        'DalliConstFactoryLandSpamBuilders',
+        'DalliConstFactoryAirSpamBuilders',
+        'DalliConstLandUpgradeBuilders',
         --'DalliAirFactoryUpgradeBuilders',
         -- Platoon Builders
-        'DalliT1Platoons',
+        'DalliConstPlatoons',
     },
     NonCheatBuilders = {
         -- I'm so good I don't need to cheat
@@ -30,12 +30,12 @@ BaseBuilderTemplate {
     FirstBaseFunction = function(aiBrain)
         local per = ScenarioInfo.ArmySetup[aiBrain.Name].AIPersonality
         if not per then 
-            return 1, 'Dalli'
+            return 1, 'DalliConstBTN'
         end
-        if per != 'dalli' then
-            return 1, 'Dalli'
+        if per != 'DalliConstAIKey' then
+            return 1, 'DalliConstBTN'
         else
-            return 9000, 'Dalli'
+            return 9000, 'DalliConstBTN'
         end
     end,
 }

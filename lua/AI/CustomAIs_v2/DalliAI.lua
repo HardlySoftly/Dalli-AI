@@ -3,13 +3,13 @@ AI = {
     Version = '0',
     AIList = {
         {
-            key = 'dalli',
+            key = 'DalliConstAIKey',
             name = 'AI: Dalli',
         },
     },
     CheatAIList = {
         {
-            key = 'dallicheat',
+            key = 'DalliConstAIKeycheat',
             name = 'AIx: Dalli',
         },
     },

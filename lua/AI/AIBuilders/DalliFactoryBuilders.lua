@@ -2,10 +2,10 @@ local DBC = '/mods/DalliAI/lua/editor/DalliBuildConditions.lua'
 
 -- Engineer Builders
 BuilderGroup {
-    BuilderGroupName = 'DalliFactoryEngineerBuilders',
+    BuilderGroupName = 'DalliConstFactoryEngineerBuilders',
     BuildersType = 'FactoryBuilder',
     Builder {
-        BuilderName = 'DalliFactoryEngineerBuildersT1',
+        BuilderName = 'DalliConstFactoryEngineerBuildersT1',
         PlatoonTemplate = 'T1BuildEngineer',
         Priority = 4000,
         InstanceCount = 1000,
@@ -16,7 +16,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryEngineerBuildersT2',
+        BuilderName = 'DalliConstFactoryEngineerBuildersT2',
         PlatoonTemplate = 'T2BuildEngineer',
         Priority = 4100,
         InstanceCount = 1000,
@@ -27,7 +27,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryEngineerBuildersT3',
+        BuilderName = 'DalliConstFactoryEngineerBuildersT3',
         PlatoonTemplate = 'T3BuildEngineer',
         Priority = 4200,
         InstanceCount = 1000,
@@ -41,10 +41,10 @@ BuilderGroup {
 
 -- Land Spam
 BuilderGroup {
-    BuilderGroupName = 'DalliFactoryLandSpamBuilders',
+    BuilderGroupName = 'DalliConstFactoryLandSpamBuilders',
     BuildersType = 'FactoryBuilder',
     Builder {
-        BuilderName = 'DalliFactoryLandSpamBuildersT3Tank',
+        BuilderName = 'DalliConstFactoryLandSpamBuildersT3Tank',
         PlatoonTemplate = 'T3LandBot',
         Priority = 1900,
         InstanceCount = 1000,
@@ -55,7 +55,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryLandSpamBuildersT2Tank',
+        BuilderName = 'DalliConstFactoryLandSpamBuildersT2Tank',
         PlatoonTemplate = 'T2LandDFTank',
         Priority = 1001,
         InstanceCount = 1000,
@@ -66,7 +66,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryLandSpamBuildersT1Tank',
+        BuilderName = 'DalliConstFactoryLandSpamBuildersT1Tank',
         PlatoonTemplate = 'T1LandDFTank',
         Priority = 1000,
         InstanceCount = 1000,
@@ -77,7 +77,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryLandSpamBuildersT1Scout',
+        BuilderName = 'DalliConstFactoryLandSpamBuildersT1Scout',
         PlatoonTemplate = 'T1LandScout',
         Priority = 1300,
         InstanceCount = 1,
@@ -88,7 +88,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryLandSpamBuildersT1Arty',
+        BuilderName = 'DalliConstFactoryLandSpamBuildersT1Arty',
         PlatoonTemplate = 'T1LandArtillery',
         Priority = 1100,
         InstanceCount = 1000,
@@ -99,7 +99,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryLandSpamBuildersT1AA',
+        BuilderName = 'DalliConstFactoryLandSpamBuildersT1AA',
         PlatoonTemplate = 'T1LandAA',
         Priority = 1200,
         InstanceCount = 1000,
@@ -110,7 +110,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryLandSpamBuildersT2AA',
+        BuilderName = 'DalliConstFactoryLandSpamBuildersT2AA',
         PlatoonTemplate = 'T2LandAA',
         Priority = 1200,
         InstanceCount = 1000,
@@ -123,10 +123,10 @@ BuilderGroup {
 }
 -- Air Spam
 BuilderGroup {
-    BuilderGroupName = 'DalliFactoryAirSpamBuilders',
+    BuilderGroupName = 'DalliConstFactoryAirSpamBuilders',
     BuildersType = 'FactoryBuilder',
     Builder {
-        BuilderName = 'DalliFactoryAirSpamBuildersT1Scout',
+        BuilderName = 'DalliConstFactoryAirSpamBuildersT1Scout',
         PlatoonTemplate = 'T1AirScout',
         Priority = 1300,
         InstanceCount = 1,
@@ -137,7 +137,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryAirSpamBuildersT1Bomber',
+        BuilderName = 'DalliConstFactoryAirSpamBuildersT1Bomber',
         PlatoonTemplate = 'T1AirBomber',
         Priority = 1200,
         BuilderConditions = {
@@ -147,7 +147,7 @@ BuilderGroup {
         BuilderType = 'All',
     },
     Builder {
-        BuilderName = 'DalliFactoryAirSpamBuildersT1Intie',
+        BuilderName = 'DalliConstFactoryAirSpamBuildersT1Intie',
         PlatoonTemplate = 'T1AirFighter',
         Priority = 1000,
         BuilderConditions = {
@@ -160,10 +160,10 @@ BuilderGroup {
 
 -- Hmm. Upgrades.
 BuilderGroup {
-    BuilderGroupName = 'DalliLandUpgradeBuilders',
+    BuilderGroupName = 'DalliConstLandUpgradeBuilders',
     BuildersType = 'PlatoonFormBuilder',
     Builder {
-        BuilderName = 'T1LandHQUpgrade',
+        BuilderName = 'DalliConstT1LandHQUpgrade',
         PlatoonTemplate = 'T1LandFactoryUpgrade',
         Priority = 3000,
         InstanceCount = 1,
@@ -174,7 +174,7 @@ BuilderGroup {
         BuilderType = 'Any',
     },
     Builder {
-        BuilderName = 'T2LandHQUpgrade',
+        BuilderName = 'DalliConstT2LandHQUpgrade',
         PlatoonTemplate = 'T2LandFactoryUpgrade',
         Priority = 3000,
         InstanceCount = 1,
@@ -185,7 +185,7 @@ BuilderGroup {
         BuilderType = 'Any',
     },
     Builder {
-        BuilderName = 'T1LandSupportUpgrade',
+        BuilderName = 'DalliConstT1LandSupportUpgrade',
         PlatoonTemplate = 'T1LandFactoryUpgrade',
         Priority = 3000,
         InstanceCount = 1,
@@ -199,8 +199,8 @@ BuilderGroup {
         BuilderType = 'Any',
     },
     Builder {
-        BuilderName = 'T2LandSupportUpgrade',
-        PlatoonTemplate = 'T2SupportLandFactoryUpgrade',
+        BuilderName = 'DalliConstT2LandSupportUpgrade',
+        PlatoonTemplate = 'DalliConstT2SupportLandFactoryUpgrade',
         Priority = 3000,
         InstanceCount = 1,
         BuilderData = {

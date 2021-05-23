@@ -1,8 +1,8 @@
 BuilderGroup {
-    BuilderGroupName = 'DalliT1Platoons',
+    BuilderGroupName = 'DalliConstPlatoons',
     BuildersType = 'PlatoonFormBuilder',
     Builder {
-        BuilderName = 'DalliT1AirScout',
+        BuilderName = 'DalliConstT1AirScout',
         PlatoonTemplate = 'T1AirScoutForm',
         Priority = 400,
         InstanceCount = 200,
@@ -15,7 +15,7 @@ BuilderGroup {
         BuilderConditions = { },
     },
     Builder {
-        BuilderName = 'DalliT1LandScout',
+        BuilderName = 'DalliConstT1LandScout',
         PlatoonTemplate = 'T1LandScoutForm',
         Priority = 400,
         InstanceCount = 2,
@@ -28,8 +28,8 @@ BuilderGroup {
         BuilderConditions = { },
     },
     Builder {
-        BuilderName = 'DalliT1Raiding',
-        PlatoonTemplate = 'DalliT1Raid',
+        BuilderName = 'DalliConstT1Raiding',
+        PlatoonTemplate = 'DalliConstT1Raid',
         Priority = 300,
         InstanceCount = 2,
         BuilderType = 'Any',
@@ -44,8 +44,8 @@ BuilderGroup {
         BuilderConditions = { },
     },
     Builder {
-        BuilderName = 'DalliT1Hunting',
-        PlatoonTemplate = 'DalliT1Hunt',
+        BuilderName = 'DalliConstT1Hunting',
+        PlatoonTemplate = 'DalliConstT1Hunt',
         Priority = 200,
         InstanceCount = 1,
         BuilderType = 'Any',
@@ -53,8 +53,8 @@ BuilderGroup {
         BuilderConditions = { },
     },
     Builder {
-        BuilderName = 'DalliT1Attack1',
-        PlatoonTemplate = 'DalliT1Attack',
+        BuilderName = 'DalliConstT1Attack',
+        PlatoonTemplate = 'DalliConstT1Attack',
         Priority = 100,
         InstanceCount = 200,
         BuilderType = 'Any',
@@ -66,33 +66,16 @@ BuilderGroup {
             PrioritizedCategories = {
                 'MASSEXTRACTION',
                 'ENERGYPRODUCTION',
+                'ENGINEER',
                 'FACTORY',
+                'LAND',
             },
         },
         BuilderConditions = { },
     },
     Builder {
-        BuilderName = 'DalliT1Attack2',
-        PlatoonTemplate = 'DalliT1Attack',
-        Priority = 100,
-        InstanceCount = 200,
-        BuilderType = 'Any',
-        BuilderData = {
-            NeverGuardBases = true,
-            NeverGuardEngineers = true,
-            UseFormation = 'AttackFormation',
-            UseMoveOrder = true,
-            PrioritizedCategories = {
-                'MOBILE LAND',
-                'MOBILE ENGINEER',
-            },
-        },
-        BuilderConditions = { },
-    },
-    
-    Builder {
-        BuilderName = 'DalliT1AirDefense',
-        PlatoonTemplate = 'DalliT1AirDefense',
+        BuilderName = 'DalliConstT1AirDefense',
+        PlatoonTemplate = 'DalliConstT1AirDefense',
         Priority = 100,
         InstanceCount = 1,
         BuilderType = 'Any',
@@ -100,8 +83,8 @@ BuilderGroup {
         BuilderConditions = { },
     },
     Builder {
-        BuilderName = 'DalliT1AirRaid',
-        PlatoonTemplate = 'DalliT1AirRaid',
+        BuilderName = 'DalliConstT1AirRaid',
+        PlatoonTemplate = 'DalliConstT1AirRaid',
         Priority = 200,
         InstanceCount = 2,
         BuilderType = 'Any',
@@ -116,8 +99,8 @@ BuilderGroup {
         BuilderConditions = { },
     },
     Builder {
-        BuilderName = 'DalliT1AirUnitBombing',
-        PlatoonTemplate = 'DalliT1AirUnitBombing',
+        BuilderName = 'DalliConstT1AirUnitBombing',
+        PlatoonTemplate = 'DalliConstT1AirUnitBombing',
         Priority = 200,
         InstanceCount = 2,
         BuilderType = 'Any',
@@ -129,8 +112,8 @@ BuilderGroup {
         BuilderConditions = { },
     },
     Builder {
-        BuilderName = 'DalliT1AirAttack',
-        PlatoonTemplate = 'DalliT1AirAttack',
+        BuilderName = 'DalliConstT1AirAttack',
+        PlatoonTemplate = 'DalliConstT1AirAttack',
         Priority = 100,
         InstanceCount = 2,
         BuilderType = 'Any',

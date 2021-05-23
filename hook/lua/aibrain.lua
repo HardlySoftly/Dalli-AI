@@ -1,19 +1,19 @@
-YeOldeAIBrainClass = AIBrain
-AIBrain = Class(YeOldeAIBrainClass) {
-    -- Hook DalliAI, set self.Dalli = true
+DalliYeOldeAIBrainClass = AIBrain
+AIBrain = Class(DalliYeOldeAIBrainClass) {
+    -- Hook DalliAI, set self.DalliConst = true
     OnCreateAI = function(self, planName)
-        YeOldeAIBrainClass.OnCreateAI(self, planName)
+        DalliYeOldeAIBrainClass.OnCreateAI(self, planName)
         local per = ScenarioInfo.ArmySetup[self.Name].AIPersonality
-        if string.find(per, 'dalli') then
+        if string.find(per, 'DalliConstAIKey') then
             LOG('* DalliAI: OnCreateAI() found DalliAI  Name: ('..self.Name..') - personality: ('..per..') ')
-            self.Dalli = true
+            self.DalliConst = true
             self.DalliBrain = CreateDalliBrain(self)
         end
     end,
 
     BaseMonitorThread = function(self)
-        if not self.Dalli then
-            return YeOldeAIBrainClass.BaseMonitorThread(self)
+        if not self.DalliConst then
+            return DalliYeOldeAIBrainClass.BaseMonitorThread(self)
         end
         WaitTicks(10)
         -- We are leaving this forked thread here because we don't need it.
@@ -21,8 +21,8 @@ AIBrain = Class(YeOldeAIBrainClass) {
     end,
 
     ExpansionHelpThread = function(self)
-        if not self.Dalli then
-            return YeOldeAIBrainClass.ExpansionHelpThread(self)
+        if not self.DalliConst then
+            return DalliYeOldeAIBrainClass.ExpansionHelpThread(self)
         end
         WaitTicks(10)
         -- We are leaving this forked thread here because we don't need it.
@@ -30,28 +30,28 @@ AIBrain = Class(YeOldeAIBrainClass) {
     end,
 
     InitializeEconomyState = function(self)
-        if not self.Dalli then
-            return YeOldeAIBrainClass.InitializeEconomyState(self)
+        if not self.DalliConst then
+            return DalliYeOldeAIBrainClass.InitializeEconomyState(self)
         end
     end,
 
     InitializeSkirmishSystems = function(self)
-        if not self.Dalli then
-            return YeOldeAIBrainClass.InitializeSkirmishSystems(self)
+        if not self.DalliConst then
+            return DalliYeOldeAIBrainClass.InitializeSkirmishSystems(self)
         end
-        YeOldeAIBrainClass.InitializeSkirmishSystems(self)
+        DalliYeOldeAIBrainClass.InitializeSkirmishSystems(self)
         self.DalliBrain:InitialiseThreads()
     end,
 
     OnIntelChange = function(self, blip, reconType, val)
-        if not self.Dalli then
-            return YeOldeAIBrainClass.OnIntelChange(self, blip, reconType, val)
+        if not self.DalliConst then
+            return DalliYeOldeAIBrainClass.OnIntelChange(self, blip, reconType, val)
         end
     end,
 
     SetupAttackVectorsThread = function(self)
-        if not self.Dalli then
-            return YeOldeAIBrainClass.SetupAttackVectorsThread(self)
+        if not self.DalliConst then
+            return DalliYeOldeAIBrainClass.SetupAttackVectorsThread(self)
         end
         WaitTicks(10)
         -- We are leaving this forked thread here because we don't need it.
@@ -59,8 +59,8 @@ AIBrain = Class(YeOldeAIBrainClass) {
     end,
 
     ParseIntelThread = function(self)
-        if not self.Dalli then
-            return YeOldeAIBrainClass.ParseIntelThread(self)
+        if not self.DalliConst then
+            return DalliYeOldeAIBrainClass.ParseIntelThread(self)
         end
         WaitTicks(10)
         -- We are leaving this forked thread here because we don't need it.
@@ -71,6 +71,7 @@ AIBrain = Class(YeOldeAIBrainClass) {
 DalliBrain = Class({
     Initialise = function(self, aiBrain)
         LOG('============ Initialising DalliBrain ============')
+        self.debug = false
         self.aiBrain = aiBrain
         self:InitialiseEconomyFeatureManager()
         self:InitialiseMapFeatureManager()
